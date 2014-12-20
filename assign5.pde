@@ -50,12 +50,12 @@ void draw(){
       break;
       
     case GAME_PLAYING:
-    //---------BONUS:BRICK FALL DOWN--------------
+    /*---------BONUS:BRICK FALL DOWN--------------
       translate(0,translateY);
       translateY += 20;
       if(translateY > 0){
         translateY = 0;
-      }
+      }*/
     //--------------------------------------------- 
       drawLife();
       drawBrick();
