@@ -6,7 +6,7 @@ class Bar {
   float barY;
   int life;
   
-  Bar(int x,int y,int barLength,int l){
+  Bar(float x,float y,float barLength,int l){
     this.barX = x; 
     this.barY = y;
     this.barWidth = barLength;
@@ -35,7 +35,7 @@ class Bar {
     ellipse(barX-barWidth/3,barY-3,barHeight,barHeight);
     ellipse(barX+barWidth/3,barY-3,barHeight,barHeight);
     fill(255,0,0);
-    arc(barX,barY+5,barHeight,barHeight,0,PI,CHORD);
+    arc(barX,barY+5,barHeight,barHeight,0,PI);
     }
   //-------------------------------------------------
   }

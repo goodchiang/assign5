@@ -1,7 +1,7 @@
-Brick [][]brick;
-Ball []ball;
+Brick [][]brickList;
+Ball []ballList;
 Ball initBall;
-Bar bar;
+Bar board;
 
 final int GAME_START   = 0;
 final int GAME_PLAYING = 1;
@@ -18,7 +18,7 @@ int brickCol = 10;
 int brickRow = 5;
 int countBrick;
 int brickTotal;
-int translateY;
+float translateY;
 float ballInitY;
 
 
@@ -28,13 +28,13 @@ void setup(){
   rectMode(CENTER);
   textAlign(CENTER);
   
-  brick = new Brick[brickCol][brickRow];
-  bar   = new Bar(width/2 ,440,80,3);
-  ball     = new Ball[bar.life];
+  brickList = new Brick[brickCol][brickRow];
+  board    = new Bar(width/2 ,440,80,3);
+  ballList = new Ball[board.life];
   initBall = new Ball(0,0,0,0);
   
-  translateY = -height;
-  ballInitY = bar.barY - bar.barHeight/2 - initBall.ballSize/2;
+  translateY = 0 - height;
+  ballInitY = board.barY - board.barHeight/2 - initBall.ballSize/2;
   
   gameState = GAME_START;
   reset();
@@ -51,6 +51,7 @@ void draw(){
       
     case GAME_PLAYING:
     //---------BONUS:BRICK FALL DOWN--------------
+     
       translate(0,translateY);
       translateY += 20;
       if(translateY > 0){
@@ -82,15 +83,15 @@ void draw(){
 void reset(){
   for(int i = 0; i < brickCol;i++){
     for(int j = 0; j < brickRow;j++){   
-    brick[i][j] = null;
+    brickList[i][j] = null;
     }
   }
-  for(int i = 0; i < ball.length; i++){
-    ball[i] = null;
+  for(int i = 0; i < ballList.length; i++){
+    ballList[i] = null;
   }
   brickMaker();
   setSpecial();
-  bar.life = 3;
+  board.life = 3;
   brickTotal = countBrick;
   initBall.gone = false;
   drawInitBall();
@@ -98,21 +99,21 @@ void reset(){
 
 void drawInitBall(){
   if(!initBall.gone){
-    initBall  = new Ball(bar.barX,ballInitY,0,0);
+    initBall  = new Ball(board.barX,ballInitY,0,0);
     initBall.display();
   }
 }
 
 void drawBall(){
-  for(int i = 0;i < ball.length;i++){
-    if(ball[i] != null && !ball[i].gone){   
-      ball[i].move();
-      ball[i].display();
+  for(int i = 0;i < ballList.length;i++){
+    if(ballList[i] != null && !ballList[i].gone){   
+      ballList[i].move();
+      ballList[i].display();
       
-      if(ball[i].ballY+ball[i].ballSize/2 > height){
-        bar.life--;
+      if(ballList[i].ballY+ballList[i].ballSize/2 > height){
+        board.life--;
         drawLife();
-        removeBall(ball[i]);
+        removeBall(ballList[i]);
         initBall.gone = false;
         drawInitBall();
       }
@@ -121,23 +122,23 @@ void drawBall(){
 }
 
 void drawBar(){
-  bar.move();
-  bar.display();
+  board.move();
+  board.display();
 }
 
 void drawBrick(){
   for(int i = 0;i < brickCol; i++){
     for(int j = 0;j < brickRow; j++){
-      if (brick[i][j]!=null && !brick[i][j].hit){
-        if(brick[i][j].brickState == BRICK_NORMAL){
+      if (brickList[i][j]!=null && !brickList[i][j].hit){
+        if(brickList[i][j].brickState == BRICK_NORMAL){
           fill(255/(brickRow-1)*j,255,255/(brickRow-1)*j);
-          brick[i][j].display();
-        }else if(brick[i][j].brickState == BRICK_RED){
+          brickList[i][j].display();
+        }else if(brickList[i][j].brickState == BRICK_RED){
           fill(255,0,0);
-          brick[i][j].display();
-        }else if(brick[i][j].brickState == BRICK_BLUE){
+          brickList[i][j].display();
+        }else if(brickList[i][j].brickState == BRICK_BLUE){
           fill(0,0,255);
-          brick[i][j].display();
+          brickList[i][j].display();
         }
       }
     }
@@ -155,7 +156,7 @@ void brickMaker(){
 
   for(int i = 0;i < brickCol;i++){
     for(int j = 0;j < brickRow;j++){
-      brick[i][j] = new Brick(iX+(space*i),50+(space*j),BRICK_NORMAL);
+      brickList[i][j] = new Brick(iX+(space*i),50+(space*j),BRICK_NORMAL);
     }
   }
 }
@@ -164,8 +165,8 @@ void setSpecial(){
   for(int i = 0; i < 3;i++){
     int col=int(random(brickCol));
     int row=int(random(brickRow));
-    if(brick[col][row].brickState==BRICK_NORMAL){
-       brick[col][row].brickState = BRICK_RED;
+    if(brickList[col][row].brickState==BRICK_NORMAL){
+       brickList[col][row].brickState = BRICK_RED;
     }else{
        i -= 1;
     }
@@ -173,8 +174,8 @@ void setSpecial(){
   for(int i = 0; i < 3;i++){
     int col=int(random(brickCol));
     int row=int(random(brickRow));
-    if(brick[col][row].brickState==BRICK_NORMAL){
-       brick[col][row].brickState = BRICK_BLUE;
+    if(brickList[col][row].brickState==BRICK_NORMAL){
+       brickList[col][row].brickState = BRICK_BLUE;
     }else{
        i -= 1;
     }
@@ -184,34 +185,34 @@ void setSpecial(){
 void drawLife(){
   fill(230, 74, 96);
   text("LIFE:",40, 467);
-  for(int life = 0 ;life < bar.life ;life++){
+  for(int life = 0 ;life < board.life ;life++){
     ellipse(78+(25*life),460,15,15);
   }
 }
 
 void checkBrickHit(){
-  for(int i = 0;i < ball.length;i++){
+  for(int i = 0;i < ballList.length;i++){
     for(int j = 0;j < brickCol;j++){
       for(int k = 0; k < brickRow;k++){
-        if(    ball[i] != null 
-           && !ball[i].gone && !brick[j][k].hit 
-           &&  ball[i].isHit(ball[i].ballX,
-                             ball[i].ballY,
-                             ball[i].ballSize,
-                             brick[j][k].brickX,
-                             brick[j][k].brickY,
-                             brick[j][k].brickWidth,
-                             brick[j][k].brickHeight) == true){
-          if(brick[j][k].brickState == BRICK_NORMAL){
-            removeBrick(brick[j][k]);
+        if(    ballList[i] != null 
+           && !ballList[i].gone && !brickList[j][k].hit 
+           &&  ballList[i].isHit(ballList[i].ballX,
+                             ballList[i].ballY,
+                             ballList[i].ballSize,
+                             brickList[j][k].brickX,
+                             brickList[j][k].brickY,
+                             brickList[j][k].brickWidth,
+                             brickList[j][k].brickHeight) == true){
+          if(brickList[j][k].brickState == BRICK_NORMAL){
+            removeBrick(brickList[j][k]);
             brickTotal--;
-          }else if(brick[j][k].brickState == BRICK_RED){
-            bar.barWidth -= 10;
-            removeBrick(brick[j][k]);
+          }else if(brickList[j][k].brickState == BRICK_RED){
+            board.barWidth -= 10;
+            removeBrick(brickList[j][k]);
             brickTotal--;
-          }else if(brick[j][k].brickState == BRICK_BLUE){
-            bar.barWidth += 10;
-            removeBrick(brick[j][k]);
+          }else if(brickList[j][k].brickState == BRICK_BLUE){
+            board.barWidth += 10;
+            removeBrick(brickList[j][k]);
             brickTotal--;
           }   
         }
@@ -221,45 +222,45 @@ void checkBrickHit(){
 }
 
 void checkBrickBounce(){
-  for(int i = 0;i < ball.length;i++){
+  for(int i = 0;i < ballList.length;i++){
     for(int j = 0;j < brickCol;j++){
       for(int k = 0; k < brickRow;k++){ 
-        if(    ball[i] != null  
-           && !ball[i].gone && !brick[j][k].hit 
-           &&  ball[i].isHit(ball[i].ballX,
-                             ball[i].ballY,
-                             ball[i].ballSize,
-                             brick[j][k].brickX,
-                             brick[j][k].brickY,
-                             brick[j][k].brickWidth,
-                             brick[j][k].brickHeight) == true){
+        if(    ballList[i] != null  
+           && !ballList[i].gone && !brickList[j][k].hit 
+           &&  ballList[i].isHit(ballList[i].ballX,
+                             ballList[i].ballY,
+                             ballList[i].ballSize,
+                             brickList[j][k].brickX,
+                             brickList[j][k].brickY,
+                             brickList[j][k].brickWidth,
+                             brickList[j][k].brickHeight) == true){
                                
-          float distX = abs(ball[i].ballX - brick[j][k].brickX);
-          float distY = abs(ball[i].ballY - brick[j][k].brickY);
-          float ballR  = ball[i].ballSize/2;     
-          float brickH = brick[j][k].brickHeight/2;
-          float brickW = brick[j][k].brickHeight/2;
-          float brickTop    = brick[j][k].brickY - brickH;
-          float brickBottom = brick[j][k].brickY + brickH;
-          float brickLeft   = brick[j][k].brickX - brickW;
-          float brickRight  = brick[j][k].brickX + brickW;
+          float distX = abs(ballList[i].ballX - brickList[j][k].brickX);
+          float distY = abs(ballList[i].ballY - brickList[j][k].brickY);
+          float ballR  = ballList[i].ballSize/2;     
+          float brickH = brickList[j][k].brickHeight/2;
+          float brickW = brickList[j][k].brickHeight/2;
+          float brickTop    = brickList[j][k].brickY - brickH - 5;
+          float brickBottom = brickList[j][k].brickY + brickH + 5;
+          float brickLeft   = brickList[j][k].brickX - brickW - 5;
+          float brickRight  = brickList[j][k].brickX + brickW + 5;
           float cornerDist_sq =   pow(distX - brickW,2) + pow(distY - brickH,2);
           
-          if(ball[i].ballX >= brickLeft && ball[i].ballX <= brickRight){
+          if(ballList[i].ballX >= brickLeft && ballList[i].ballX <= brickRight){
             if(distX <= brickW +ballR){
-              ball[i].ballSpeedY *= -1;
+              ballList[i].ballSpeedY *= -1;
             }
           }
           
-          if(ball[i].ballY >= brickTop && ball[i].ballY <= brickBottom){
+          else if(ballList[i].ballY >= brickTop && ballList[i].ballY <= brickBottom){
             if(distY <= brickH +ballR){
-              ball[i].ballSpeedX *= -1;
+              ballList[i].ballSpeedX *= -1;
             }
           } 
             
-          if((cornerDist_sq <= pow(ballR,2)) == true){
-            ball[i].ballSpeedX *= -1;
-            ball[i].ballSpeedY *= -1;
+          else if((cornerDist_sq <= pow(ballR,2)) == true){
+            ballList[i].ballSpeedX *= -1;
+            ballList[i].ballSpeedY *= -1;
           } 
         }
       }
@@ -271,7 +272,7 @@ void checkGameEnd(){
   if(gameState == GAME_PLAYING){
     if(brickTotal == 0){
       gameState = GAME_WIN;
-    }else if(bar.life == 0){
+    }else if(board.life == 0){
       gameState = GAME_LOSE;
     }
   }
@@ -314,8 +315,8 @@ void mousePressed(){
   int ballNum;
   if(mouseButton == RIGHT && gameState == GAME_PLAYING 
      && initBall.shoot == false){
-    ballNum = ball.length - bar.life;
-    ball[ballNum] = new Ball(bar.barX,ballInitY,random(-5,5),-5);
+    ballNum = ballList.length - board.life;
+    ballList[ballNum] = new Ball(board.barX,ballInitY,random(-5,5),-5);
     initBall.shoot = true;
     removeBall(initBall);
   }

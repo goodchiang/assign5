@@ -32,9 +32,9 @@ class Ball {
     }
     
     float ballBottom = ballY + ballSize/2;
-    float ballBl   = bar.barY - bar.barHeight/2;
-    float barLeft  = bar.barX - bar.barWidth/2;
-    float barRight = bar.barX + bar.barWidth/2;
+    float ballBl   = board.barY - board.barHeight/2;
+    float barLeft  = board.barX - board.barWidth/2;
+    float barRight = board.barX + board.barWidth/2;
     
     if(ballBottom > ballBl && ballX > barLeft && ballX < barRight){
       ballY -= ballSize;
