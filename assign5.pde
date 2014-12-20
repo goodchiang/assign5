@@ -101,9 +101,10 @@ void reset(){
     ballXPos[i] = 1000;
     ballYPos[i] = 1000;
   }
-
+  
   brickMaker();
   setSpecial();
+  board.barWidth = 80;
   board.life = 3;
   brickTotal = countBrick;
   initBall.gone = false;
