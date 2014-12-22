@@ -19,7 +19,7 @@ int brickRow = 5;
 int countBrick;
 int brickTotal;
 float ballInitY;
-//float translateY;
+float translateY;
 
 
 float [] ballXPos;
@@ -40,7 +40,6 @@ void setup(){
   ballXPos = new float[30];
   ballYPos = new float[30];
   
-  //translateY = -height;
   ballInitY = board.barY - board.barHeight/2 - initBall.ballSize/2;
   
   gameState = GAME_START;
@@ -58,12 +57,12 @@ void draw(){
       
     case GAME_PLAYING:
     //---------BONUS:BRICK FALL DOWN--------------
-     /*
+      pushMatrix();
       translate(0,translateY);
       translateY += 20;
       if(translateY > 0){
         translateY = 0;
-      }*/
+      }
     //--------------------------------------------- 
       drawLife();
       drawBrick();
@@ -74,16 +73,16 @@ void draw(){
       checkBrickHit();
       checkGameEnd();
       ballPath();
+      
+      popMatrix();
       break;
       
     case GAME_WIN:
       printText();
-      //translateY = -height;
       break;
       
     case GAME_LOSE:
       printText();
-      //translateY = -height;
       break; 
   }
 }
@@ -102,6 +101,7 @@ void reset(){
     ballYPos[i] = 1000;
   }
   
+  translateY = -height;
   brickMaker();
   setSpecial();
   board.barWidth = 80;
