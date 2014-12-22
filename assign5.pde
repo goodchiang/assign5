@@ -20,6 +20,10 @@ int countBrick;
 int brickTotal;
 float ballInitY;
 float translateY;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/gh-pages
 
 float [] ballXPos;
 float [] ballYPos;
@@ -55,8 +59,19 @@ void draw(){
       break;
       
     case GAME_PLAYING:
+<<<<<<< HEAD
       pushMatrix();
       fallDown();
+=======
+    //---------BONUS:BRICK FALL DOWN--------------
+      pushMatrix();
+      translate(0,translateY);
+      translateY += 20;
+      if(translateY > 0){
+        translateY = 0;
+      }
+    //--------------------------------------------- 
+>>>>>>> origin/gh-pages
       drawLife();
       drawBrick();
       drawBar();
@@ -66,6 +81,10 @@ void draw(){
       checkBrickHit();
       checkGameEnd();
       ballPath();
+<<<<<<< HEAD
+=======
+      
+>>>>>>> origin/gh-pages
       popMatrix();
       break;
       
