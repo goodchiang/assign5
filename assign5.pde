@@ -19,8 +19,7 @@ int brickRow = 5;
 int countBrick;
 int brickTotal;
 float ballInitY;
-//float translateY;
-
+float translateY;
 
 float [] ballXPos;
 float [] ballYPos;
@@ -33,14 +32,13 @@ void setup(){
   textAlign(CENTER);
   
   brickList = new Brick[brickCol][brickRow];
-  board    = new Bar(width/2 ,435,80,3);
-  ballList = new Ball[board.life];
-  initBall = new Ball(0,0,0,0);
+  board     = new Bar(width/2 ,435,80,3);
+  ballList  = new Ball[board.life];
+  initBall  = new Ball(0,0,0,0);
   
   ballXPos = new float[30];
   ballYPos = new float[30];
   
-  //translateY = -height;
   ballInitY = board.barY - board.barHeight/2 - initBall.ballSize/2;
   
   gameState = GAME_START;
@@ -57,14 +55,8 @@ void draw(){
       break;
       
     case GAME_PLAYING:
-    //---------BONUS:BRICK FALL DOWN--------------
-     /*
-      translate(0,translateY);
-      translateY += 20;
-      if(translateY > 0){
-        translateY = 0;
-      }*/
-    //--------------------------------------------- 
+      pushMatrix();
+      fallDown();
       drawLife();
       drawBrick();
       drawBar();
@@ -74,16 +66,15 @@ void draw(){
       checkBrickHit();
       checkGameEnd();
       ballPath();
+      popMatrix();
       break;
       
     case GAME_WIN:
       printText();
-      //translateY = -height;
       break;
       
     case GAME_LOSE:
       printText();
-      //translateY = -height;
       break; 
   }
 }
@@ -102,6 +93,7 @@ void reset(){
     ballYPos[i] = 1000;
   }
   
+  translateY = -height;
   brickMaker();
   setSpecial();
   board.barWidth = 80;
@@ -179,8 +171,8 @@ void setSpecial(){
   for(int i = 0; i < 3;i++){
     int col=int(random(brickCol));
     int row=int(random(brickRow));
-    if(brickList[col][row].brickState==BRICK_NORMAL){
-       brickList[col][row].brickState = BRICK_RED;
+    if(brickList[col][row].brickState == BRICK_NORMAL){
+       brickList[col][row].brickState =  BRICK_RED;
     }else{
        i -= 1;
     }
@@ -188,8 +180,8 @@ void setSpecial(){
   for(int i = 0; i < 3;i++){
     int col=int(random(brickCol));
     int row=int(random(brickRow));
-    if(brickList[col][row].brickState==BRICK_NORMAL){
-       brickList[col][row].brickState = BRICK_BLUE;
+    if(brickList[col][row].brickState == BRICK_NORMAL){
+       brickList[col][row].brickState =  BRICK_BLUE;
     }else{
        i -= 1;
     }
@@ -212,12 +204,12 @@ void checkBrickHit(){
         if(    ballList[i] != null 
            && !ballList[i].gone && !brickList[j][k].hit 
            &&  ballList[i].isHit(ballList[i].ballX,
-                             ballList[i].ballY,
-                             ballList[i].ballSize,
-                             brickList[j][k].brickX,
-                             brickList[j][k].brickY,
-                             brickList[j][k].brickWidth,
-                             brickList[j][k].brickHeight) == true){
+                                 ballList[i].ballY,
+                                 ballList[i].ballSize,
+                                 brickList[j][k].brickX,
+                                 brickList[j][k].brickY,
+                                 brickList[j][k].brickWidth,
+                                 brickList[j][k].brickHeight) == true){
           if(brickList[j][k].brickState == BRICK_NORMAL){
             removeBrick(brickList[j][k]);
             brickTotal--;
@@ -229,8 +221,7 @@ void checkBrickHit(){
             board.barWidth += 15;
             removeBrick(brickList[j][k]);
             brickTotal--;
-          }
-                             
+          }                          
         }
       }
     }
@@ -244,13 +235,12 @@ void checkBrickBounce(){
         if(    ballList[i] != null  
            && !ballList[i].gone && !brickList[j][k].hit 
            &&  ballList[i].isHit(ballList[i].ballX,
-                             ballList[i].ballY,
-                             ballList[i].ballSize,
-                             brickList[j][k].brickX,
-                             brickList[j][k].brickY,
-                             brickList[j][k].brickWidth,
-                             brickList[j][k].brickHeight) == true){
-                               
+                                 ballList[i].ballY,
+                                 ballList[i].ballSize,
+                                 brickList[j][k].brickX,
+                                 brickList[j][k].brickY,
+                                 brickList[j][k].brickWidth,
+                                 brickList[j][k].brickHeight) == true){                    
           float distX = abs(ballList[i].ballX - brickList[j][k].brickX);
           float distY = abs(ballList[i].ballY - brickList[j][k].brickY);
           float ballR  = ballList[i].ballSize/2;     
@@ -261,21 +251,17 @@ void checkBrickBounce(){
           float brickLeft   = brickList[j][k].brickX - brickW - 5;
           float brickRight  = brickList[j][k].brickX + brickW + 5;
           float cornerDist_sq =   pow(distX - brickW,2) + pow(distY - brickH,2);
-          
-          
-          
+             
           if(ballList[i].ballX >= brickLeft && ballList[i].ballX <= brickRight){
             if(distX <= brickW +ballR){
               ballList[i].ballSpeedY *= -1;
             }
-          }
-          
+          }       
           else if(ballList[i].ballY >= brickTop && ballList[i].ballY <= brickBottom){
             if(distY <= brickH +ballR){
               ballList[i].ballSpeedX *= -1;
             }
-          } 
-            
+          }     
           else if((cornerDist_sq <= pow(ballR,2)) == true){
             ballList[i].ballSpeedX *= -1;
             ballList[i].ballSpeedY *= -1;
@@ -305,8 +291,7 @@ void removeBall(Ball byeBall){
 void removeBrick(Brick byeBrick){
   byeBrick.hit    = true;
   byeBrick.brickX = 1000;
-  byeBrick.brickY = 1000;
-  
+  byeBrick.brickY = 1000;  
 }
 
 void keyPressed(){
@@ -331,8 +316,9 @@ void keyPressed(){
 
 void mousePressed(){
   int ballNum;
-  if(mouseButton == RIGHT && gameState == GAME_PLAYING 
-     && initBall.shoot == false){
+  if(mouseButton == RIGHT && 
+     gameState == GAME_PLAYING && 
+     initBall.shoot == false){
     ballNum = ballList.length - board.life;
     ballList[ballNum] = new Ball(board.barX,ballInitY,random(-5,5),-5);
     initBall.shoot = true;
@@ -374,6 +360,16 @@ void printText(){
       break;
   }
 }
+
+//---------BONUS:BRICK FALL DOWN--------------------------
+void fallDown(){
+  translate(0,translateY);
+  translateY += 20;
+  if(translateY > 0){
+    translateY = 0;
+  }
+}
+//--------------------------------------------------------
 
 //---------BONUS:Ball Path--------------------------------
 void ballPath(){
